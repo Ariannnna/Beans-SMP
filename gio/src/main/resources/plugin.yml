@@ -6,3 +6,16 @@ prefix: Arcane
 authors: [ Ariannna ]
 description: Beans SMP plugin
 website: github.com/Ariannnna
+commands:
+  prefix:
+    description: set your immortal prefix
+  taunt:
+    description: taunts
+  gm:
+    aliases: [gamemode]
+  uhc:
+    description: no
+  setlevel:
+    description: no.
+  teleport:
+    aliases: [tp]
