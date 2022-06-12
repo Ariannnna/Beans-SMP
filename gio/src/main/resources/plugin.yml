@@ -1,0 +1,8 @@
+name: Gio
+version: '${project.version}'
+main: com.arianna.beans.smp.SMP
+api-version: 1.19
+prefix: Arcane
+authors: [ Ariannna ]
+description: Beans SMP plugin
+website: github.com/Ariannnna
