@@ -1,9 +1,13 @@
 package com.arianna.beans.smp;
 
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -71,101 +75,127 @@ public final class SMP extends JavaPlugin {
     }
 
     static class AchievementUnlock implements Listener {
-        public String[][] normal = new String[][] {
-                { "story/mine_stone", "Stone Age" },
-                { "story/upgrade_tools", "Getting an Upgrade" },
-                { "story/smelt_iron", "Acquire Hardware" },
-                { "story/obtain_armor", "Suit Up" },
-                { "story/lava_bucket", "Hot Stuff" },
-                { "story/iron_tools", "Isn't It Iron Pick" },
-                { "story/deflect_arrow", "Not Today, Thank You" },
-                { "story/form_obsidian", "Ice Bucket Challenge" },
-                { "story/mine_diamond", "Diamonds!" },
-                { "story/enter_the_nether", "We Need to Go Deeper" },
-                { "story/shiny_gear", "Cover Me With Diamonds" },
-                { "story/enchant_item", "Enchanter" },
-                { "story/follow_ender_eye", "Eye Spy" },
-                { "story/enter_the_end", "The End?" },
-                { "nether/find_fortress", "A Terrible Fortress" },
-                { "nether/get_wither_skull", "Spooky Scary Skeleton" },
-                { "nether/obtain_blaze_rod", "Into Fire" },
-                { "nether/summon_wither", "Withering Heights" },
-                { "nether/brew_potion", "Local Brewery" },
-                { "nether/create_beacon", "Bring Home the Beacon" },
-                { "nether/find_bastion", "Those Were the Days" },
-                { "nether/obtain_ancient_debris", "Hidden in the Depths" },
-                { "nether/obtain_crying_obsidian", "Who is Cutting Onions?" },
-                { "nether/distract_piglin", "Oh Shiny" },
-                { "nether/ride_strider", "This Boat Has Legs" },
-                { "nether/loot_bastion", "War Pigs" },
-                { "nether/use_lodestone", "Country Lode, Take Me Home" },
-                { "nether/charge_respawn_anchor", "Not Quite \"Nine\" Lives" },
-                { "end/kill_dragon", "Free the End" },
-                { "end/enter_end_gateway", "Remote Getaway" },
-                { "end/find_end_city", "The City at the End of the Game" },
-                { "adventure/voluntary_exile", "Voluntary Exile" },
-                { "adventure/kill_a_mob", "Monster Hunter" },
-                { "adventure/trade", "What a Deal!" },
-                { "adventure/honey_block_slide", "Sticky Situation" },
-                { "adventure/ol_betsy", "Ol' Betsy" },
-                { "adventure/sleep_in_bed", "Sweet Dreams" },
-                { "adventure/throw_trident", "A Throwaway Joke" },
-                { "adventure/shoot_arrow", "Take Aim" },
-                { "adventure/whos_the_pillager_now", "Who's the Pillager Now?" },
-                { "adventure/very_very_frightening", "Very Very Frightening" },
-                { "husbandry/safely_harvest_honey", "Bee Our Guest" },
-                { "husbandry/breed_an_animal", "The Parrots and the Bats" },
-                { "husbandry/tame_an_animal", "Best Friends Forever" },
-                { "husbandry/fishy_business", "Fishy Business" },
-                { "husbandry/silk_touch_nest", "Total Beelocation" },
-                { "husbandry/plant_seed", "A Seedy Place" },
-                { "husbandry/tactical_fishing", "Tactical Fishing" } };
+        public String[][] advancements = new String[][] {
 
-        public String[][] goal = new String[][] {
-                { "story/cure_zombie_villager", "Zombie Doctor" },
-                { "nether/create_full_beacon", "Beaconator" },
-                { "end/dragon_egg", "The Next Generation" },
-                { "end/respawn_dragon", "The End... Again..." },
-                { "end/dragon_breath", "You Need a Mint" },
-                { "end/elytra", "Sky's the Limit" },
-                { "adventure/totem_of_undying", "Postmortal" },
-                { "adventure/summon_iron_golem", "Hired Help" }
+                // Base Achievements (Story-line)
+                { "story/mine_stone", "Stone Age", "Mine stone with your new pickaxe." },
+                { "story/upgrade_tools", "Getting an Upgrade", "Construct a better pickaxe." },
+                { "story/smelt_iron", "Acquire Hardware", "Smelt an iron ingot." },
+                { "story/obtain_armor", "Suit Up", "Protect yourself with a piece of iron armor." },
+                { "story/lava_bucket", "Hot Stuff", "Fill a bucket with lava." },
+                { "story/iron_tools", "Isn't It Iron Pick", "Upgrade your pickaxe to iron." },
+                { "story/deflect_arrow", "Not Today, Thank You", "Block a projectile using your shield." },
+                { "story/form_obsidian", "Ice Bucket Challenge", "Obtain a block of obsidian." },
+                { "story/mine_diamond", "Diamonds!", "Get your hands on some of those diamonds." },
+                { "story/enter_the_nether", "We Need to Go Deeper", "Build, light and enter a Nether Portal." },
+                { "story/shiny_gear", "Cover Me With Diamonds", "Put on any type of Diamond Armor." },
+                { "story/enchant_item", "Enchanter", "Enchant an item with any enchantment at an " + UtilColor.purple + "Enchantment Table" + UtilColor.yellow + "." },
+                { "story/cure_zombie_villager", "Zombie Doctor", "Weaken and then cure a Zombie Villager." },
+                { "story/follow_ender_eye", "Eye Spy", "Enter a Stronghold by following an Ender Eye." },
+                { "story/enter_the_end", "The End?", "The end has begun." },
+
+                // Nether
+                { "nether/return_to_sender", "Return to Sender", "Kill a Ghast with their own fireball." },
+                { "nether/find_bastion", "Those Were the Days", "Enter a Bastion Remnant." },
+                { "nether/obtain_ancient_debris", "Hidden in the Depths", "Obtain Ancient Debris." },
+                { "nether/fast_travel", "Subspace Bubble", "Use the Nether to travel 7 km in the Overworld." },
+                { "nether/find_fortress", "A Terrible Fortress", "Enter a Nether Fortress." },
+                { "nether/obtain_crying_obsidian", "Who is Cutting Onions?", "Get your hands on some of that Crying Obsidian." },
+                { "nether/distract_piglin", "Oh Shiny", "Distract a Piglins with gold." },
+                { "nether/ride_strider", "This Boat Has Legs", "Ride a Strider with a Warped Fungus on a Stick." },
+                { "nether/uneasy_alliance", "Uneasy Alliance", "Rescue a Ghast from the Nether, bring it safely home to the Overworld... and then kill it." },
+                { "nether/loot_bastion", "War Pigs", "Loot a chest in a Bastion Remnant." },
+                { "nether/use_lodestone", "Country Lode, Take Me Home", "Use a compass on a Lodestone." },
+                { "nether/netherite_armor", "Cover Me in Debris", "Get a full suit of Netherite armor." },
+                { "nether/get_wither_skull", "Spooky Scary Skeleton", "Obtain a Wither Skeleton's skull." },
+                { "nether/obtain_blaze_rod", "Into Fire", "Relieve a Blaze of its rod." },
+                { "nether/charge_respawn_anchor", "Not Quite \"Nine\" Lives", "Charge a Respawn Anchor to the maximum." },
+                { "nether/ride_strider_in_overworld_lava", "Feels Like Home", "Take a Strider for a loooong ride on a lava lake in the Overworld." },
+                { "nether/explore_nether", "Hot Tourist Destinations", "Explore all Nether biomes." },
+                { "nether/summon_wither", "Withering Heights", "Summon the Wither." },
+                { "nether/brew_potion", "Local Brewery", "Brew a potion." },
+                { "nether/create_beacon", "Bring Home the Beacon", "Construct and place a beacon." },
+                { "nether/all_potions", "A Furious Cocktail", "Have every potion effect applied at the same time." },
+                { "nether/create_full_beacon", "Beaconator", "Bring a beacon to full power." },
+                { "nether/all_effects", "How Did We Get Here?", "Have every effect applied at the same time." },
+
+
+                // End Achievements
+                { "end/kill_dragon", "Free the End", "The End has been saved from enslavement!" },
+                { "end/dragon_egg", "The Next Generation", "Hold the Dragon Egg." },
+                { "end/enter_end_gateway", "Remote Getaway", "Escape the island." },
+                { "end/respawn_dragon", "The End... Again...", "Respawn the Ender Dragon." },
+                { "end/dragon_breath", "You Need a Mint", "Collect dragon's breath in a glass bottle." },
+                { "end/find_end_city", "The City at the End of the Game", "Enter an end city." },
+                { "end/elytra", "Sky's the Limit", "Get your hands on one of those flying Elytra." },
+                { "end/levitate", "Great View From Up Here", "Levitate up 50 blocks from the attacks of a Shulker." },
+
+                // Adventure Achievements
+                { "adventure/voluntary_exile", "Voluntary Exile", "Kill a raid captain.\nMaybe consider staying away from villages for the time being..." },
+                { "adventure/spyglass_at_parrot", "Is It a Bird?", "Look at a parrot through a spyglass, then reconsider your life choices." },
+                { "adventure/kill_a_mob", "Monster Hunter", "Kill any hostile monster." },
+                { "adventure/trade", "What a Deal!", "Successfully trade with a Villager." },
+                { "adventure/honey_block_slide", "Sticky Situation", "Jump into a Honey Block to break your fall." },
+                { "adventure/ol_betsy", "Ol' Betsy", "Shoot a crossbow." },
+                { "adventure/lightning_rod_with_villager_no_fire", "Surge Protector", "Protect a villager from an undesired shock without starting a fire." },
+                { "adventure/fall_from_world_height", "Caves & Cliffs", "Free fall from the top of the world (build limit) to the bottom of the world and survive." },
+                { "adventure/avoid_vibration", "Sneak 100", "Sneak near a Sculk Sensor or Warden to prevent it from detecting you." },
+                { "adventure/sleep_in_bed", "Sweet Dreams", "Sleep in a bed to change your respawn point." },
+                { "adventure/hero_of_the_village", "Hero of the Village", "Successfully defend a village from a raid." },
+                { "adventure/spyglass_at_ghast", "Is It a Balloon?", "Look at a Ghast through a spyglass." },
+                { "adventure/throw_trident", "A Throwaway Joke", "Throw a trident at something.\nNote: Throwing away your only weapon is not a good idea." },
+                { "adventure/kill_mob_near_sculk_catalyst", "It Spreads", "Kill a mob near a Sculk Catalyst." },
+                { "adventure/shoot_arrow", "Take Aim", "Shoot something with an arrow." },
+                { "adventure/kill_all_mobs", "Monsters Hunted", "Kill one of every hostile monster." },
+                { "adventure/totem_of_undying", "Postmortal", "Use a Totem of Undying to cheat death." },
+                { "adventure/summon_iron_golem", "Hired Help", "Summon an Iron Golem to help defend a village." },
+                { "adventure/trade_at_world_height", "Star Trader", "Trade with a Villager at the build height limit." },
+                { "adventure/two_birds_one_arrow", "Two Birds, One Arrow", "Kill two Phantoms with a piercing arrow." },
+                { "adventure/whos_the_pillager_now", "Who's the Pillager Now?", "Kill a pillager with a crossbow." },
+                { "adventure/arbalistic", "Arbalistic", "Kill five unique mobs with one crossbow shot." },
+                { "adventure/adventuring_time", "Adventuring Time", "Discover every biome." },
+                { "adventure/play_jukebox_in_meadows", "Sound of Music", "Make the Meadows come alive with the sound of music from a Jukebox." },
+                { "adventure/walk_on_powder_snow_with_leather_boots", "Light as a Rabbit", "Walk on powder snow...without sinking in it." },
+                { "adventure/spyglass_at_dragon", "Is It a Plane?", "Look at the Ender Dragon through a spyglass." },
+                { "adventure/very_very_frightening", "Very Very Frightening", "Strike a Villager with lightning." },
+                { "adventure/sniper_duel", "Sniper Duel", "Kill a Skeleton from at least 50 meters away." },
+                { "adventure/bullseye", "Bullseye", "Hit the bullseye of a Target block from at least 30 meters away." },
+
+                // Husbandry Achievements
+                { "husbandry/safely_harvest_honey", "Bee Our Guest", "Use a Campfire to collect Honey from a Beehive using a Bottle without aggravating the bees." },
+                { "husbandry/breed_an_animal", "The Parrots and the Bats", "Breed two animals together." },
+                { "husbandry/allay_deliver_item_to_player", "You've Got a Friend in Me", "Have an Allay deliver items to you."},
+                { "husbandry/ride_a_boat_with_a_goat", "Whatever Floats Your Goat!", "Get in a Boat and float with a Goat."},
+                { "husbandry/tame_an_animal", "Best Friends Forever", "Tame an animal." },
+                { "husbandry/make_a_sign_glow", "Glow and Behold!", "Make the text of a sign glow." },
+                { "husbandry/fishy_business", "Fishy Business", "Catch a fish." },
+                { "husbandry/silk_touch_nest", "Total Beelocation", "Move a Bee Nest, with 3 bees inside, using Silk Touch." },
+                { "husbandry/tadpole_in_a_bucket", "Bukkit Bukkit", "Catch a Tadpole in a Bucket." },
+                { "husbandry/plant_seed", "A Seedy Place", "Plant a seed and watch it grow." },
+                { "husbandry/wax_on", "Wax On", "Apply Honeycomb to a Copper block!" },
+                { "husbandry/bred_all_animals", "Two by Two", "Breed all the animals." },
+                { "husbandry/allay_deliver_cake_to_note_block", "Birthday Song", "Have an Allay drop a Cake at a Note Block." },
+                { "husbandry/complete_catalogue", "A Complete Catalogue", "Tame all cat variants." },
+                { "husbandry/tactical_fishing", "Tactical Fishing", "Catch a fish... without a fishing rod!" },
+                { "husbandry/leash_all_frog_variants", "When the Squad Hops into Town", "Get each Frog variant on a Lead." },
+                { "husbandry/balanced_diet", "A Balanced Diet", "Eat everything that is edible, even if it's not good for you." },
+                { "husbandry/obtain_netherite_hoe", "Serious Dedication", "Use a Netherite Ingot to upgrade a hoe, and then reevaluate your life choices." },
+                { "husbandry/wax_off", "Wax Off", "Scrape Wax off of a Copper block!" },
+                { "husbandry/axolotl_in_a_bucket", "The Cutest Predator", "Catch an Axolotl in a bucket!" },
+                { "husbandry/froglights", "With Our Powers Combined!", "Have all Froglights in your inventory." },
+                { "husbandry/kill_axolotl_target", "The Healing Power of Friendship!", "Team up with an axolotl and win a fight." }
         };
 
-        public String[][] challenge = new String[][] {
-                { "nether/return_to_sender", "Return to Sender" },
-                { "nether/fast_travel", "Subspace Bubble" },
-                { "nether/uneasy_alliance", "Uneasy Alliance" },
-                { "nether/all_potions", "A Furious Cocktail" },
-                { "nether/all_effects", "How Did We Get Here?" },
-                { "nether/netherite_armor", "Cover Me in Debris" },
-                { "nether/explore_nether", "Hot Tourist Destinations" },
-                { "end/levitate", "Great View From Up Here" },
-                { "adventure/hero_of_the_village", "Hero of the Village" },
-                { "adventure/kill_all_mobs", "Monsters Hunted" },
-                { "adventure/two_birds_one_arrow", "Two Birds, One Arrow" },
-                { "adventure/arbalistic", "Arbalistic" },
-                { "adventure/adventuring_time", "Adventuring Time" },
-                { "adventure/sniper_duel", "Sniper Duel" },
-                { "adventure/bullseye", "Bullseye" },
-                { "husbandry/bred_all_animals", "Two by Two" },
-                { "husbandry/complete_catalogue", "A Complete Catalogue" },
-                { "husbandry/balanced_diet", "A Balanced Diet" },
-                { "husbandry/break_diamond_hoe", "Serious Dedication" },
-                { "husbandry/obtain_netherite_hoe", "Serious Dedication" } };
-
-        public String find(String ad) {
+        public String find(String advancement) {
             int i;
-            for (i = 0; i < normal.length; i++) {
-                if (ad.equals(normal[i][0])) return normal[i][1];
-            }
-            for (i = 0; i < goal.length; i++) {
-                if (ad.equals(goal[i][0])) return goal[i][1];
-            }
-            for (i = 0; i < challenge.length; i++) {
-                if (ad.equals(challenge[i][0])) return challenge[i][1];
-            }
-            return ad;
+            for (i = 0; i < advancements.length; i++) if (advancement.equals(advancements[i][0])) return advancements[i][1];
+            return advancement;
+        }
+
+        public String findDescription(String advancement) {
+            int i;
+            for (i = 0; i < advancements.length; i++) if (advancement.equals(advancements[i][0])) return advancements[i][2];
+            return advancement;
         }
 
         private boolean check(String adv) {
@@ -175,13 +205,22 @@ public final class SMP extends JavaPlugin {
 
         @EventHandler
         public void onRegisteredAchievement(PlayerAdvancementDoneEvent event) {
-
             if (check(event.getAdvancement().getKey().getKey())) {
                 String title = find(event.getAdvancement().getKey().getKey());
-                Bukkit.broadcastMessage(UtilColor.blue + "Advancement> " + UtilColor.yellow + event.getPlayer().getName() + UtilColor.gray + " has advanced through " + UtilColor.yellow + title + UtilColor.gray + ".");
-            }
+                String description = findDescription(event.getAdvancement().getKey().getKey());
+                SimpleDateFormat time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-//            Bukkit.broadcastMessage(UtilColor.blue + "Advancement> " + UtilColor.gray + "[" + UtilColor.yellow + event.getAdvancement().getDisplay().getDescription() + UtilColor.gray + "].");
+                TextComponent advancement = new TextComponent(UtilColor.blue + "Advancement> " + UtilColor.yellow + event.getPlayer().getName() + UtilColor.gray + " has advanced through " + UtilColor.yellow + title + UtilColor.gray + ".");
+                HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                        new ComponentBuilder(UtilColor.blue + "[Advancement]\n" + UtilColor.gray +
+                                "Name: " + UtilColor.yellow + title + UtilColor.gray + "\n" +
+                                "Description: " + UtilColor.yellow + description + UtilColor.gray + "\n\n" +
+                                "Unlocked by: " + UtilColor.yellow + event.getPlayer().getName() + UtilColor.gray + "\n" +
+                                "Time Unlocked: " + UtilColor.yellow + time.format(timestamp) + " (GMT/BST)").create());
+                advancement.setHoverEvent(hoverEvent);
+                Bukkit.getOnlinePlayers().forEach(p -> p.spigot().sendMessage(advancement));
+            }
         }
     }
 
