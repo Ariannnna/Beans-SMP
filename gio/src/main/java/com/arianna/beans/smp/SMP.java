@@ -23,7 +23,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 public final class SMP extends JavaPlugin {
 
@@ -71,7 +70,7 @@ public final class SMP extends JavaPlugin {
         }
     }
 
-    class Taunt implements CommandExecutor {
+    static class Taunt implements CommandExecutor {
         public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
             if (sender instanceof org.bukkit.command.ConsoleCommandSender) Bukkit.getConsoleSender().sendMessage("no");
             else if (args.length != 1) sender.sendMessage(UtilColor.blue + "Taunt> " + UtilColor.gray + "/taunt [player]");
@@ -179,7 +178,7 @@ public final class SMP extends JavaPlugin {
         }
     }
 
-    class GamemodeCommand implements CommandExecutor {
+    static class GamemodeCommand implements CommandExecutor {
         public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
             if (sender instanceof org.bukkit.command.ConsoleCommandSender) {
                 Bukkit.getConsoleSender().sendMessage("no");
@@ -204,7 +203,7 @@ public final class SMP extends JavaPlugin {
         }
     }
 
-    class UHCCommand implements CommandExecutor {
+    static class UHCCommand implements CommandExecutor {
         public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
             if (sender instanceof org.bukkit.command.ConsoleCommandSender) Bukkit.getConsoleSender().sendMessage("no");
             else {
@@ -218,7 +217,7 @@ public final class SMP extends JavaPlugin {
         }
     }
 
-    class MessageCommand implements CommandExecutor {
+    static class MessageCommand implements CommandExecutor {
         public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
             if (sender instanceof org.bukkit.command.ConsoleCommandSender) Bukkit.getConsoleSender().sendMessage("no");
             else if (args.length != 1) sender.sendMessage(UtilColor.blue + "Taunt> " + UtilColor.gray + "/taunt [player]");
@@ -257,7 +256,7 @@ public final class SMP extends JavaPlugin {
         }
     }
 
-    class ConsoleSendSayCommand implements CommandExecutor {
+    static class ConsoleSendSayCommand implements CommandExecutor {
         public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
             if (sender instanceof Player) Bukkit.getConsoleSender().sendMessage("no");
             else {
@@ -268,7 +267,7 @@ public final class SMP extends JavaPlugin {
         }
     }
 
-    class TeleportCommand implements CommandExecutor {
+    static class TeleportCommand implements CommandExecutor {
         public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
             if (sender instanceof ConsoleCommandSender) Bukkit.getConsoleSender().sendMessage("no");
             else if (sender.isOp()) {
@@ -339,9 +338,9 @@ public final class SMP extends JavaPlugin {
 
         public Object getProperty(String property) {return getConfig().get(uuid.toString() + "." + property);}
 
-        public String getPropertyString(String property) {return Objects.requireNonNull(getConfig().get(this.uuid.toString() + "." + property)).toString();}
+        public String getPropertyString(String property) {return Objects.requireNonNull(getConfig().get(uuid.toString() + "." + property)).toString();}
 
-        public void setProperty(String property, String replacement) {getConfig().set(this.uuid.toString() + "." + property, replacement);}
+        public void setProperty(String property, String replacement) {getConfig().set(uuid.toString() + "." + property, replacement);}
 
         public void setInt(String property, Integer replacement) {
             getConfig().set(this.uuid.toString() + "." + property, replacement);
@@ -373,10 +372,8 @@ public final class SMP extends JavaPlugin {
             int x = Integer.parseInt(config.getPropertyString("immortal"));
             int level = Integer.parseInt(config.getPropertyString("deaths"));
             if (message.contains("%")) message.replaceAll("%", " "); // We have this to patch the % bug with chat async.
-            if (message.startsWith("#")) {
-                String newMessage = message.replaceFirst("#", "");
-                Bukkit.broadcastMessage(UtilColor.white + UtilColor.bold + "TEAM " + new Levels().switchColor(level) + UtilColor.gray + event.getPlayer().getName() + UtilColor.white + " " + newMessage);
-            } else if (message.startsWith("@")) {
+            if (message.startsWith("#")) Bukkit.broadcastMessage(UtilColor.white + UtilColor.bold + "TEAM " + new Levels().switchColor(level) + UtilColor.gray + event.getPlayer().getName() + UtilColor.white + " " + message.replaceFirst("#", ""));
+            else if (message.startsWith("@")) {
                 String newMessage1 = message.replaceFirst("@", "");
                 if (newMessage1.contains("&l")) newMessage1.replaceAll("&l", "");
                 String newMessage = newMessage1.replace("&", ChatColor.COLOR_CHAR + "");
@@ -438,7 +435,7 @@ public final class SMP extends JavaPlugin {
         }
     }
 
-    class Levels {
+    static class Levels {
         public boolean isBetween(int x, int lower, int upper) {
             return (lower <= x && x <= upper);
         }
