@@ -19,10 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.plugin.java.JavaPlugin;
 public final class SMP extends JavaPlugin {
 
@@ -32,6 +29,7 @@ public final class SMP extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new Chat(), this);
         Bukkit.getPluginManager().registerEvents(new JoinLeave(), this);
         Bukkit.getPluginManager().registerEvents(new RegisterDeath(), this);
+        Bukkit.getPluginManager().registerEvents(new AchievementUnlock(), this);
 //        Bukkit.getPluginManager().registerEvents(new Scoreboard(), this);
         Objects.requireNonNull(getCommand("prefix")).setExecutor(new ImmortalPrefixCommand());
         Objects.requireNonNull(getCommand("taunt")).setExecutor(new Taunt());
@@ -67,6 +65,16 @@ public final class SMP extends JavaPlugin {
         @EventHandler
         public void onLeave(PlayerQuitEvent event) {
             event.setQuitMessage(UtilColor.red + UtilColor.bold + "[QUIT] " + UtilColor.darkAqua + event.getPlayer().getName());
+        }
+    }
+
+    static class AchievementUnlock implements Listener {
+        @EventHandler
+        public void onRegisteredAchievement(PlayerAdvancementDoneEvent event) {
+            String advancementName = Objects.requireNonNull(event.getAdvancement().getDisplay()).getTitle();
+            String advancementDescription = event.getAdvancement().getDisplay().getDescription();
+            Bukkit.broadcastMessage(UtilColor.blue + "Advancement> " + UtilColor.yellow + event.getPlayer().getName() + UtilColor.gray + " has advanced through " + UtilColor.yellow + advancementName + UtilColor.gray + ".");
+            Bukkit.broadcastMessage(UtilColor.blue + "Advancement> " + UtilColor.gray + "[" + UtilColor.yellow + advancementDescription + UtilColor.gray + "].");
         }
     }
 
